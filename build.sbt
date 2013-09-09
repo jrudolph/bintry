@@ -6,11 +6,18 @@ version := "0.2.0"
 
 description := "your packages, delivered fresh"
 
-crossScalaVersions := Seq("2.9.3", "2.10.0", "2.10.1")
+// We need the latest scala version on a BC series
+crossScalaVersions := Seq("2.9.2", "2.9.3", "2.10.2")
 
-scalaVersion := "2.9.3"
+libraryDependencies <+= scalaBinaryVersion {
+  case x if x startsWith "2.9" => "net.databinder.dispatch" % "dispatch-json4s-native_2.9.3" % "0.11.0"
+  case _ => "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.0"
+}
 
-libraryDependencies ++= Seq("net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.0")
+libraryDependencies <++= scalaVersion {
+  case "2.9.2" => Seq("net.virtual-void" %% "futures-backport" % "1")
+  case _ => Nil
+}
 
 publishTo := Some(Opts.resolver.sonatypeStaging)
 
